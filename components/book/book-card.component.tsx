@@ -14,7 +14,7 @@ const BookCard = ({ book }: { book: Book }) => {
       initial={{ opacity: 0, translateY: 20 }}
     >
       <Link key={book.id} href={`/books/${book.id}`}>
-        <Card className="p-0 rounded-t-lg flex-1 flex flex-col justify-between h-full max-h-200 shadow-lg hover:shadow-xl transition-shadow duration-300">
+        <Card className="p-0 rounded-t-lg flex-1 flex flex-col justify-between h-full  shadow-lg hover:shadow-xl transition-shadow duration-300">
           <CardHeader className="p-0 rounded-t-lg">
             <div className="relative flex h-60 w-full  overflow-hidden rounded-t-lg">
               <Image

@@ -1,3 +1,4 @@
+import BookCard from "@/components/book/book-card.component";
 import { Card } from "@/components/ui/card";
 import { Book } from "@/lib/types";
 import { headers } from "next/headers";
@@ -25,8 +26,8 @@ const page = async (props: { params: Promise<{ id: string }> }) => {
     <div className="min-h-screen w-full h-full flex flex-col  items-center mb-10">
       <h1 className="text-3xl font-bold ">Book Details Page</h1>
       <p className="mt-4">Detailed information about the selected book.</p>
-      <div className="grid grid-cols-2 w-full mt-8 gap-6 px-4 flex-1">
-        <Card className="p-0 flex flex-col justify-center rounded-lg shadow-lg">
+      <div className="grid grid-cols-1 lg:grid-cols-2 w-full mt-8 gap-6 px-4 flex-1">
+        {/* <Card className="p-0 flex flex-col justify-center rounded-lg shadow-lg">
           <div className="relative flex  h-full w-full  overflow-hidden rounded-t-lg shadow-lg">
             <Image
               src={bookData.book_cover}
@@ -55,7 +56,9 @@ const page = async (props: { params: Promise<{ id: string }> }) => {
               </p>
             </div>
           </div>
-        </Card>
+        </Card> */}
+        <BookCard book={bookData} />
+
         <Card className="p-6 flex flex-col rounded-lg shadow-lg">
           <div className="flex items-center mb-4 justify-between">
             <div className="flex items-center space-x-2">
