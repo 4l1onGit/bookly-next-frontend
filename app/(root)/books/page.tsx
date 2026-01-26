@@ -25,7 +25,7 @@ const page = async () => {
       <p className="text-center mb-6 text-muted-foreground">
         Booklys collection of user added books
       </p>
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 mt-10 gap-6 px-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-10 gap-6 px-4">
         {booksData &&
           booksData.map((book: Book) => <BookCard key={book.id} book={book} />)}
         {!booksData.length && (

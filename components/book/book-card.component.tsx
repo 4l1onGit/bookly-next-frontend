@@ -14,7 +14,7 @@ const BookCard = ({ book }: { book: Book }) => {
       initial={{ opacity: 0, translateY: 20 }}
     >
       <Link key={book.id} href={`/books/${book.id}`}>
-        <Card className="p-0 rounded-t-lg">
+        <Card className="p-0 rounded-t-lg flex-1 flex flex-col justify-between h-full max-h-200 shadow-lg hover:shadow-xl transition-shadow duration-300">
           <CardHeader className="p-0 rounded-t-lg">
             <div className="relative flex h-60 w-full  overflow-hidden rounded-t-lg">
               <Image
@@ -26,20 +26,25 @@ const BookCard = ({ book }: { book: Book }) => {
             </div>
 
             <div className="flex space-x-2 justify-between items-center px-4 ">
-              <h2 className="text-xl font-semibold">{book.book_title}</h2>
-              <p className="text-gray-600 text-sm">by {book.author}</p>
+              <h2 className="text-md font-semibold">{book.book_title}</h2>
+              <p className="text-gray-600 text-xs">by {book.author}</p>
             </div>
           </CardHeader>
           <CardDescription className="px-4">
             <div className="h-full overflow-hidden text-ellipsis">
-              <span>summary: </span>
-              <p>{book.summary}</p>
+              <span className="font-medium text-black">Summary: </span>
+              <p className="line-clamp-2 text-ellipsis">{book.summary}</p>
             </div>
           </CardDescription>
           <CardFooter className="p-4">
             <div className="flex justify-between w-full">
               <span className="font-medium text-sm">{book.pages} pages</span>
-              <span className="font-medium text-sm">{book.genre}</span>
+              <div className="">
+                <span className="font-medium text-sm mr-1">Genre:</span>
+                <span className="font-medium text-sm bg-blue-500/10 text-blue-700 px-2 py-1 rounded-full">
+                  {book.genre}
+                </span>
+              </div>
             </div>
           </CardFooter>
         </Card>
