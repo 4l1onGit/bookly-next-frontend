@@ -3,7 +3,7 @@ export const GET = async (
   { params }: { params: Promise<{ id: string }> },
 ) => {
   const { id } = await params;
-  const book = await fetch(process.env.API_URL + "books/" + id);
+  const book = await fetch(process.env.NEXT_PUBLIC_API_URL + "books/" + id);
 
   if (!book.ok) {
     return Response.json(

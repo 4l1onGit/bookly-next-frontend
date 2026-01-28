@@ -2,8 +2,6 @@ import BookCard from "@/components/book/book-card.component";
 import { Card } from "@/components/ui/card";
 import { Book } from "@/lib/types";
 import { headers } from "next/headers";
-import Image from "next/image";
-import React from "react";
 
 const page = async (props: { params: Promise<{ id: string }> }) => {
   const { id } = await props.params;
