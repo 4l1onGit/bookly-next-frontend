@@ -8,7 +8,7 @@ const links = [
 
 const NavBody = () => {
   return (
-    <ul className="space-x-4 flex">
+    <ul className="space-x-4 md:flex hidden w-1/2 justify-center">
       {links.map((link) => (
         <li key={link.name} className="hover:underline">
           <Link href={link.href}>{link.name}</Link>

@@ -4,6 +4,7 @@ import "./globals.css";
 import Nav from "@/components/navbar/nav.component";
 import Footer from "@/components/footer/footer.component";
 import { Toaster } from "sonner";
+import { AuthProvider } from "@/context/AuthContext";
 
 export const inter = Inter();
 
@@ -22,10 +23,12 @@ export default function RootLayout({
       <body
         className={`${inter.className} antialiased max-w-7xl flex flex-col justify-center mx-auto px-4`}
       >
-        <Nav />
-        {children}
-        <Footer />
-        <Toaster />
+        <AuthProvider>
+          <Nav />
+          {children}
+          <Footer />
+          <Toaster />
+        </AuthProvider>
       </body>
     </html>
   );

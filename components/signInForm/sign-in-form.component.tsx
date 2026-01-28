@@ -1,13 +1,13 @@
 "use client";
-import { Label } from "@radix-ui/react-label";
-import React from "react";
-import { Button } from "../ui/button";
-import { useForm, Controller } from "react-hook-form";
-import z from "zod";
+import { useAuth } from "@/hooks/useAuth";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Controller, useForm } from "react-hook-form";
+import { toast } from "sonner";
+import z from "zod";
+import { Button } from "../ui/button";
 import { FieldGroup } from "../ui/field";
 import { Input } from "../ui/input";
-import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const signInSchema = z.object({
   email: z.email(),
@@ -15,6 +15,8 @@ const signInSchema = z.object({
 });
 
 const SignInForm = () => {
+  const router = useRouter();
+  const { login } = useAuth();
   const form = useForm<z.infer<typeof signInSchema>>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
@@ -25,26 +27,10 @@ const SignInForm = () => {
 
   const onSubmit = async (data: z.infer<typeof signInSchema>) => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: data.email,
-          password: data.password,
-        }),
-      });
+      await login(data.email, data.password);
 
-      if (!res.ok) {
-        throw new Error("Login failed");
-      }
-
-      const token = await res.json();
-
-      localStorage.setItem("authToken", token);
-      toast.success("Login successful!");
-      window.location.href = "/books";
+      toast.success("Logged in successfully!");
+      router.push("/");
     } catch (error) {
       console.error("Login failed", error);
       toast.error("Login failed. Please check your credentials and try again.");

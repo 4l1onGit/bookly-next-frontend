@@ -7,3 +7,8 @@ export type Book = {
   pages: number;
   genre: string;
 };
+
+export type User = {
+  email: string;
+  password?: string;
+};
