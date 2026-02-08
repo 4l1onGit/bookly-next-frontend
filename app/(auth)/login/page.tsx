@@ -1,3 +1,6 @@
+"use client";
+import { useAuth } from "@/hooks/useAuth";
+
 import SignInForm from "@/components/signInForm/sign-in-form.component";
 import {
   Card,
@@ -6,8 +9,19 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
-const page = () => {
+const LoginPage = () => {
+  const { token } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (token) {
+      router.replace("/");
+    }
+  }, [token, router]);
+
   return (
     <div className="w-full max-w-lg mx-auto px-4">
       <Card className="p-8">
@@ -27,4 +41,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default LoginPage;

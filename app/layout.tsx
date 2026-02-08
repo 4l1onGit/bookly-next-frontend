@@ -19,9 +19,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
-        className={`${inter.className} antialiased max-w-7xl flex flex-col justify-center mx-auto px-4`}
+        className={`${inter.className} antialiased max-w-7xl flex flex-col justify-center mx-auto px-4 `}
       >
         <AuthProvider>
           <Nav />

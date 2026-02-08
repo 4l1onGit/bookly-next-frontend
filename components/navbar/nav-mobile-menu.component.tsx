@@ -20,14 +20,15 @@ const links = [
 ];
 
 const NavMobileMenu = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, loading } = useAuth();
+
   return (
     <Sheet>
       <SheetTrigger>
         <MenuIcon className="md:hidden block w-6 h-6 cursor-pointer" />
       </SheetTrigger>
 
-      <SheetContent className="w-3/4 transition-all duration-150 ease-in-out">
+      <SheetContent className="md:hidden w-3/4 transition-all duration-150 ease-in-out">
         <SheetHeader className="mt-8">
           <SheetTitle>
             <NavLogo />
@@ -43,7 +44,9 @@ const NavMobileMenu = () => {
                 {link.name}
               </Link>
             ))}
-            {!user ? (
+            {loading && <div className="py-2 border-b">Loading...</div>}
+
+            {!user && !loading ? (
               <Link href="/login" className="py-2 border-b">
                 Sign In
               </Link>

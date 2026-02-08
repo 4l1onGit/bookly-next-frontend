@@ -1,4 +1,5 @@
 import BookCard from "@/components/book/book-card.component";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardDescription,
@@ -6,9 +7,15 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { Book } from "@/lib/types";
+import { Metadata } from "next";
 
 import { headers } from "next/headers";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Books - Bookly",
+  description: "Browse and manage your book collection on Bookly.",
+};
 
 const page = async () => {
   const header = await headers();
@@ -25,6 +32,16 @@ const page = async () => {
       <p className="text-center mb-6 text-muted-foreground">
         Booklys collection of user added books
       </p>
+      <div className="w-full px-4 flex space-x-4 justify-between">
+        <Button asChild>
+          <Link href="/books/create">Add New Book</Link>
+        </Button>
+        <div className="">
+          <span className="text-xs text-muted-foreground">
+            pagination to be added
+          </span>
+        </div>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-10 gap-6 px-4">
         {booksData &&
           booksData.map((book: Book) => <BookCard key={book.id} book={book} />)}

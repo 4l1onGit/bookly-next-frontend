@@ -4,7 +4,10 @@ import Link from "next/link";
 import { Button } from "../ui/button";
 
 const NavAuth = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, loading } = useAuth();
+  if (loading) {
+    return <div className="w-1/4 hidden md:flex justify-end">Loading...</div>;
+  }
   return (
     <div className="w-1/4 hidden md:flex justify-end">
       {!user ? (
