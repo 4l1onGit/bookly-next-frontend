@@ -5,7 +5,7 @@ import NavMobileMenu from "./nav-mobile-menu.component";
 
 const Nav = () => {
   return (
-    <nav className="flex justify-between h-16 items-center border-b mb-8">
+    <nav className="flex justify-between h-16 items-center border-b mb-8 max-w-7xl mx-auto px-4">
       <NavLogo />
       <NavBody />
       <NavAuth />

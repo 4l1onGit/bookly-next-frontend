@@ -20,12 +20,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${inter.className} antialiased max-w-7xl flex flex-col justify-center mx-auto px-4 `}
-      >
+      <body className={`${inter.className} antialiased`}>
         <AuthProvider>
           <Nav />
-          {children}
+          <main className="max-w-7xl mx-auto px-4 flex flex-col">
+            {children}
+          </main>
           <Footer />
           <Toaster />
         </AuthProvider>
