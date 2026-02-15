@@ -1,78 +1,92 @@
 "use client";
-import { Button } from "@/components/ui/button";
-
 import { Field, FieldError, FieldGroup } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
+import { Book } from "@/lib/types";
+import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
 
+// Will later merge create and edit form into one component, for now keeping them separate for clarity and ease of development.
+
 const bookSchema = z.object({
   book_title: z.string().min(1, "Book title is required"),
   author: z.string().min(1, "Author is required"),
   bookCover: z
     .any()
-    .refine((file) => file?.size <= 5 * 1024 * 1024, `Max image size is 5MB.`)
+    .nullable()
+    .refine(
+      (file) => !file || file.size <= 5 * 1024 * 1024,
+      "Max image size is 5MB.",
+    )
     .refine(
       (file) =>
+        !file ||
         ["image/jpeg", "image/png", "image/webp", "image/jpg"].includes(
-          file?.type,
+          file.type,
         ),
       "Only .jpg, .jpeg, .png and .webp formats are supported.",
     ),
+  existingCover: z.string().nullable().optional(),
   summary: z.string().min(1, "Summary is required"),
   pages: z.number().min(1, "Pages must be at least 1"),
   genre: z.string().min(1, "Genre is required"),
 });
 
-const CreateBookForm = () => {
+const EditBookForm = ({ book }: { book: Book }) => {
   const { login, token } = useAuth();
   const router = useRouter();
 
   const form = useForm<z.infer<typeof bookSchema>>({
     resolver: zodResolver(bookSchema),
     defaultValues: {
-      book_title: "",
-      author: "",
+      book_title: book.book_title,
+      author: book.author,
       bookCover: null,
-      summary: "",
-      pages: 1,
-      genre: "",
+      existingCover: book.book_cover,
+      summary: book.summary,
+      pages: book.pages,
+      genre: book.genre,
     },
   });
 
   const onSubmit = async (data: z.infer<typeof bookSchema>) => {
     // Handle book creation logic here
-
-    try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}books/upload`, {
-        method: "POST",
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
-        body: (() => {
-          const formData = new FormData();
-          formData.append("image", data.bookCover);
-          return formData;
-        })(),
-      }).then(async (res) => {
-        if (!res.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const responseData = await res.json();
-        data.bookCover = responseData.url;
-      });
-    } catch {
-      toast.error("Failed to upload book cover. Please try again.");
-      return;
+    if (!data.bookCover || typeof data.bookCover === "string") {
+      data.bookCover = data.existingCover; // Use existing cover if no new file is uploaded
+    } else {
+      // If a new file is uploaded, we will handle it below
+      try {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL}books/upload`, {
+          method: "POST",
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+          body: (() => {
+            const formData = new FormData();
+            formData.append("image", data.bookCover);
+            return formData;
+          })(),
+        }).then(async (res) => {
+          if (!res.ok) {
+            throw new Error("Network response was not ok");
+          }
+          const responseData = await res.json();
+          data.bookCover = responseData.url;
+        });
+      } catch {
+        toast.error("Failed to upload book cover. Please try again.");
+        return;
+      }
     }
 
+    data = { ...data, existingCover: undefined }; // Remove existingCover before sending to API
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}books`, {
-        method: "POST",
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}books/${book.id}`, {
+        method: "PUT",
         headers: {
           authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -85,11 +99,11 @@ const CreateBookForm = () => {
         return res.json();
       });
 
-      router.push("/books"); // Redirect to home or books list after creation
-      toast.success("Book created successfully!");
+      router.push("/books"); // Redirect to home or books list after update
+      toast.success("Book updated successfully!");
     } catch (error) {
-      console.error("Book creation failed", error);
-      toast.error("Failed to create book. Please try again.");
+      console.error("Book update failed", error);
+      toast.error("Failed to update book. Please try again.");
     }
   };
 
@@ -97,15 +111,14 @@ const CreateBookForm = () => {
     router.push("/login");
     return null;
   }
-
   return (
     <form
-      id="bookCreate"
+      id="bookEdit"
       className="w-1/3 bg-slate-50 shadow-md p-4 rounded-2xl flex flex-col justify-center"
       onSubmit={form.handleSubmit(onSubmit)}
     >
-      {/* Form fields for book creation go here */}
-      <h2 className="text-2xl font-bold mb-4 text-center">Create a New Book</h2>
+      {/* Form fields for book editing go here */}
+      <h2 className="text-2xl font-bold mb-4 text-center">Edit Book</h2>
       <div className="space-y-2 mt-4">
         <FieldGroup>
           <Controller
@@ -153,7 +166,6 @@ const CreateBookForm = () => {
                   type="file"
                   id="bookCover"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                  required
                   onChange={(e) => field.onChange(e.target.files?.[0] ?? null)}
                 />
                 {fieldState.invalid && (
@@ -200,6 +212,7 @@ const CreateBookForm = () => {
                 placeholder="Enter number of pages"
                 required
                 {...field}
+                onChange={(e) => field.onChange(e.target.valueAsNumber)}
               />
             )}
           />
@@ -226,14 +239,14 @@ const CreateBookForm = () => {
       <div className="mt-6">
         <Button
           type="submit"
-          form="bookCreate"
+          form="bookEdit"
           className="w-full px-4 py-2transition-colors"
         >
-          Create Book
+          Update Book
         </Button>
       </div>
     </form>
   );
 };
 
-export default CreateBookForm;
+export default EditBookForm;

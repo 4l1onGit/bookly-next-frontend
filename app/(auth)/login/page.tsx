@@ -13,9 +13,9 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 const LoginPage = () => {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const router = useRouter();
-
+  console.log("LoginPage render, token:", token, "user:", user);
   useEffect(() => {
     if (token) {
       router.replace("/");

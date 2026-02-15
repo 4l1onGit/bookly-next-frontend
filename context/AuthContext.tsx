@@ -25,10 +25,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return { token: null, user: null, loading: true };
     }
     const token = localStorage.getItem("authToken");
-    const email = localStorage.getItem("userEmail");
+    const user = localStorage.getItem("user");
     return {
       token,
-      user: token && email ? { email } : null,
+      user: token && user ? JSON.parse(user) : null,
       loading: false,
     };
   });
@@ -45,16 +45,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!res.ok) {
       throw new Error("Login failed");
     }
+    const data = await res.json();
 
-    const { token } = await res.json();
+    const { token, user } = data;
+
     localStorage.setItem("authToken", token);
-    localStorage.setItem("userEmail", email);
-    setAuth({ token, user: { email }, loading: false }); // Will be replaced with real user data
+    localStorage.setItem("user", JSON.stringify(user));
+    setAuth({ token, user, loading: false }); // Will be replaced with real user data
   };
 
   const logout = () => {
     localStorage.removeItem("authToken");
-    localStorage.removeItem("userEmail");
+    localStorage.removeItem("user");
     setAuth({ token: null, user: null, loading: false });
   };
 
