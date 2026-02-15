@@ -9,6 +9,7 @@ type AuthContextType = {
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
+  register: (email: string, password: string) => Promise<void>;
 };
 
 export const AuthContext = createContext<AuthContextType>({
@@ -17,6 +18,7 @@ export const AuthContext = createContext<AuthContextType>({
   loading: true,
   login: async () => {},
   logout: () => {},
+  register: async () => {},
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -60,12 +62,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setAuth({ token: null, user: null, loading: false });
   };
 
+  const register = async (email: string, password: string) => {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}register`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
+
+    if (!res.ok) {
+      throw new Error("Registration failed");
+    }
+
+    login(email, password);
+  };
+
   const value = {
     token: auth.token,
     user: auth.user,
     loading: auth.loading,
     login,
     logout,
+    register,
   };
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

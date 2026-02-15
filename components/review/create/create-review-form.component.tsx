@@ -50,6 +50,7 @@ const CreateReviewForm = ({ bookID }: { bookID: string }) => {
 
       toast.success("Review submitted successfully!");
       form.reset();
+      router.push("/reviews");
     } catch (error) {
       console.error("Error submitting review:", error);
       toast.error(
@@ -101,6 +102,7 @@ const CreateReviewForm = ({ bookID }: { bookID: string }) => {
                 placeholder="Enter your rating"
                 required
                 {...field}
+                onChange={(e) => field.onChange(Number(e.target.value))}
               />
             )}
           />
