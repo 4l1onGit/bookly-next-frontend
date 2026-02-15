@@ -20,6 +20,7 @@ export type Review = {
   rating: number;
   review_text: string;
   reviewer: User;
+  book: Book;
 };
 
 export enum UserRole {

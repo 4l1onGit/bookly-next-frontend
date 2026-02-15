@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/useAuth";
 import { Review, UserRole } from "@/lib/types";
-import { Edit } from "lucide-react";
+import { Edit, TrashIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
@@ -41,44 +41,54 @@ const UserControls = ({ review }: { review: Review }) => {
   };
 
   return (
-    <div className="w-full flex justify-end">
+    <div className="">
       {user?.email === review.reviewer.email ||
       user?.roles!.includes(UserRole.ADMIN) ||
       user?.roles!.includes(UserRole.MOD) ? (
-        <div>
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button
-                className="bg-red-500 text-white z-50"
-                size="sm"
-                onClick={(e) => e.stopPropagation()}
-              >
-                Delete
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-sm">
-              <DialogHeader>
-                <DialogTitle>Delete Review</DialogTitle>
-                <DialogDescription>
-                  Are you sure you want to delete this review? This action
-                  cannot be undone.
-                </DialogDescription>
-              </DialogHeader>
-
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Button variant="outline">Cancel</Button>
-                </DialogClose>
-                <Button variant="destructive" onClick={handleDelete}>
+        <div className="w-full">
+          <div className="flex items-center shrink-0 ">
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button
+                  className=" z-50"
+                  variant="destructive"
+                  size="sm"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <TrashIcon className="mr-1" />
                   Delete
                 </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-          <Button variant="outline" size="sm" className="ml-2">
-            <Edit className="mr-1" />
-            Edit
-          </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-sm">
+                <DialogHeader>
+                  <DialogTitle>Delete Review</DialogTitle>
+                  <DialogDescription>
+                    Are you sure you want to delete this review? This action
+                    cannot be undone.
+                  </DialogDescription>
+                </DialogHeader>
+
+                <DialogFooter>
+                  <DialogClose asChild>
+                    <Button variant="outline">Cancel</Button>
+                  </DialogClose>
+                  <Button variant="destructive" onClick={handleDelete}>
+                    <TrashIcon className="mr-1" />
+                    Delete
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+            <Button
+              variant="outline"
+              size="sm"
+              className="ml-2"
+              onClick={() => router.push(`/reviews/${review.id}/edit`)}
+            >
+              <Edit className="mr-1" />
+              Edit
+            </Button>
+          </div>
         </div>
       ) : (
         ""
