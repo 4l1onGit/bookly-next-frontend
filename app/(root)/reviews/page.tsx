@@ -1,4 +1,4 @@
-import { Card } from "@/components/ui/card";
+import ReviewCard from "@/components/review/card/review-card.component";
 import { Review } from "@/lib/types";
 import { headers } from "next/headers";
 
@@ -17,15 +17,7 @@ const ReviewsPage = async () => {
       </p>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {reviewsData.map((review: Review) => (
-          <Card key={review.id} className="p-4">
-            <h2 className="text-lg font-semibold mb-2">
-              {review.reviewer.email}
-            </h2>
-            <p className="text-gray-700 mb-1">
-              Rating: {"⭐".repeat(review.rating)}
-            </p>
-            <p className="text-gray-600">{review.review_text}</p>
-          </Card>
+          <ReviewCard key={review.id} review={review} />
         ))}
       </div>
     </div>
