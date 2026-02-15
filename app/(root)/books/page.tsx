@@ -17,14 +17,16 @@ export const metadata: Metadata = {
   description: "Browse and manage your book collection on Bookly.",
 };
 
-const page = async () => {
+const page = async (props: { searchParams: Promise<{ page?: string }> }) => {
+  const { page } = await props.searchParams;
   const header = await headers();
   const host = header.get("host");
   const protocol = host?.includes("localhost") ? "http://" : "https://";
-  const books = await fetch(protocol + host + "/api/books");
-
-  const booksData = await books.json();
-  // booksData.length = 0;
+  const books = await fetch(
+    protocol + host + "/api/books/?page=" + (page || "1"),
+  );
+  const data = await books.json();
+  const booksData = data.data as Book[];
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -32,7 +34,7 @@ const page = async () => {
       <p className="text-center mb-6 text-muted-foreground">
         Booklys collection of user added books
       </p>
-      <BookControls />
+      <BookControls totalBooks={data.total} page={page || "1"} />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-10 gap-6 px-4">
         {booksData &&
           booksData.map((book: Book) => <BookCard key={book.id} book={book} />)}

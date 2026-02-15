@@ -1,6 +1,9 @@
-export const GET = async () => {
-  // Placeholder function to simulate fetching books from a database or external API
-  const books = await fetch(process.env.NEXT_PUBLIC_API_URL + "books");
+export const GET = async (request: Request) => {
+  const url = new URL(request.url);
+  const page = url.searchParams.get("page") || "1";
+  const books = await fetch(
+    process.env.NEXT_PUBLIC_API_URL + "books?page=" + page,
+  );
 
   if (!books.ok) {
     throw new Error("Failed to fetch books");
