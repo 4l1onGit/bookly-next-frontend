@@ -1,16 +1,27 @@
 import BookCard from "@/components/book/book-card.component";
-import { Card } from "@/components/ui/card";
+import UniversalPagination from "@/components/pagination/universal-pagination.component";
+import { Card, CardFooter } from "@/components/ui/card";
 import { Book, Review } from "@/lib/types";
 import { headers } from "next/headers";
 
-const page = async (props: { params: Promise<{ id: string }> }) => {
+const page = async (props: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ page?: string; limit?: string }>;
+}) => {
   const { id } = await props.params;
+  const { page, limit } = await props.searchParams;
   const header = await headers();
   const host = header.get("host");
   const protocol = host?.includes("localhost") ? "http://" : "https://";
   const book = await fetch(`${protocol}${host}/api/books/${id}`);
 
-  const reviews = await fetch(`${protocol}${host}/api/books/${id}/reviews`);
+  const reviewsResponse = await fetch(
+    `${protocol}${host}/api/books/${id}/reviews?page=${page || "1"}&limit=${limit || "5"}`,
+  );
+
+  const reviewsData = await reviewsResponse.json();
+
+  const reviews = reviewsData.data as Review[];
 
   if (!book.ok) {
     return (
@@ -20,8 +31,6 @@ const page = async (props: { params: Promise<{ id: string }> }) => {
       </div>
     );
   }
-
-  const reviewsData = await reviews.json();
 
   const bookData: Book = await book.json();
   return (
@@ -41,27 +50,27 @@ const page = async (props: { params: Promise<{ id: string }> }) => {
                 {/*
                    to be replaced with actual review count
                 */}
-                [{reviewsData.length ?? 0} reviews]
+                [{reviewsData.total} reviews]
               </span>
             </div>
             <span>
-              {reviewsData.length > 0
-                ? `Average ${reviewsData.reduce((acc: number, review: Review) => acc + review.rating, 0) / reviewsData.length}`
+              {reviews.length > 0
+                ? `Average ${(reviews.reduce((acc: number, review: Review) => acc + review.rating, 0) / reviews.length).toFixed(1)} / 5`
                 : "No ratings yet"}
             </span>
           </div>
-          <div className="text-sm">
+          <div className="text-sm space-y-4">
             {/* to be replaced with actual review content */}
-            {reviewsData.length === 0
+            {reviews.length === 0
               ? "No reviews available for this book yet."
-              : reviewsData.map((review: Review) => (
+              : reviews.map((review: Review) => (
                   <div
-                    className="flex flex-col justify-between space-y-2 bg-primary/10 p-4 rounded h-28 overflow-hidden"
+                    className="flex flex-col justify-between space-y-2 bg-primary/7 shadow-md p-4 rounded h-28 overflow-hidden"
                     key={review.id}
                   >
                     <div className="flex justify-between">
                       <span>{review.review_text}</span>
-                      <span>{review.rating}</span>
+                      <span>{review.rating.toFixed(1)}</span>
                     </div>
                     <span className="text-xs text-muted-foreground">
                       by {review.reviewer.email}
@@ -69,6 +78,12 @@ const page = async (props: { params: Promise<{ id: string }> }) => {
                   </div>
                 ))}
           </div>
+          <CardFooter className="flex items-center justify-end pt-4">
+            <UniversalPagination
+              page={page || "1"}
+              totalRecords={reviewsData.total}
+            />
+          </CardFooter>
         </Card>
       </div>
     </div>

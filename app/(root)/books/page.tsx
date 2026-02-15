@@ -38,7 +38,7 @@ const page = async (props: { searchParams: Promise<{ page?: string }> }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-10 gap-6 px-4">
         {booksData &&
           booksData.map((book: Book) => <BookCard key={book.id} book={book} />)}
-        {!booksData.length && (
+        {booksData.length === 0 && (
           <Card className="grid col-span-4 p-8 border-dashed border-2">
             <CardHeader>
               <CardDescription className="text-center space-y-4">

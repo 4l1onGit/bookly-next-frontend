@@ -1,16 +1,24 @@
 const GET = async (
-  _req: Request,
+  request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) => {
   const { id } = await params;
+  const url = new URL(request.url);
+  const page = url.searchParams.get("page");
+  const limit = url.searchParams.get("limit");
   const reviews = await fetch(
-    process.env.NEXT_PUBLIC_API_URL + "books/" + id + "/reviews",
+    process.env.NEXT_PUBLIC_API_URL +
+      "books/" +
+      id +
+      `/reviews?page=${page}&limit=${limit}`,
   );
 
   if (!reviews.ok) {
+    const errorData = await reviews.json();
+    console.error("Error fetching reviews:", errorData);
     return Response.json(
-      { message: "Reviews not found", ok: false },
-      { status: 404 },
+      { message: errorData.message || "Reviews not found", ok: false },
+      { status: reviews.status },
     );
   }
   const data = await reviews.json();
