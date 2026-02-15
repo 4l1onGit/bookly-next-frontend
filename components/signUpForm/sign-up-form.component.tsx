@@ -8,6 +8,7 @@ import { Button } from "../ui/button";
 import { FieldGroup } from "../ui/field";
 import { Input } from "../ui/input";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const signUpSchema = z.object({
   email: z.email(),
@@ -77,10 +78,18 @@ const SignUpForm = () => {
           />
         </FieldGroup>
       </div>
-      <div className="mt-6">
+      <div className="mt-6 mb-4">
         <Button type="submit" className="w-full" form="register">
           Sign Up
         </Button>
+      </div>
+      <div className="w-full flex items-center justify-center">
+        <span className="text-sm text-muted-foreground">
+          Already have an account?{" "}
+          <Link href="/login" className="underline">
+            Sign In
+          </Link>
+        </span>
       </div>
     </form>
   );
