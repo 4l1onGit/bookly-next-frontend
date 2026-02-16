@@ -1,5 +1,15 @@
 import { Button } from "@/components/ui/button";
 import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
   Table,
   TableBody,
   TableCaption,
@@ -8,9 +18,46 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useAuth } from "@/hooks/useAuth";
 import { User, UserRole } from "@/lib/types";
+import { useRouter } from "next/navigation";
+
+import { toast } from "sonner";
 
 const UsersTable = ({ users }: { users: User[] }) => {
+  const { user, token } = useAuth();
+  const router = useRouter();
+
+  const handleDelete = (userId: string) => {
+    try {
+      if (!user || !token) return;
+
+      if (!user.roles?.includes(UserRole.ADMIN)) {
+        toast.error("You do not have permission to perform this action.");
+        return;
+      }
+
+      fetch(`/api/users/${userId}`, {
+        method: "DELETE",
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      })
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error("Failed to delete user");
+          }
+          toast.success("User deleted successfully");
+          router.refresh();
+        })
+        .catch((err) => {
+          toast.error(err.message);
+        });
+    } catch {
+      toast.error("An unexpected error occurred.");
+    }
+  };
+
   return (
     <Table className="">
       <TableCaption>List of all registered users</TableCaption>
@@ -37,11 +84,39 @@ const UsersTable = ({ users }: { users: User[] }) => {
               )}
             </TableCell>
             <TableCell className="flex justify-end">
-              {/* Action buttons for edit/delete can go here */}
               <Button variant="outline">Edit</Button>
-              <Button variant="destructive" className="ml-2">
-                Delete
-              </Button>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button
+                    className="bg-red-500 text-white z-50"
+                    size="sm"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    Delete
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-sm">
+                  <DialogHeader>
+                    <DialogTitle>Delete User</DialogTitle>
+                    <DialogDescription>
+                      Are you sure you want to delete this user? This action
+                      cannot be undone.
+                    </DialogDescription>
+                  </DialogHeader>
+
+                  <DialogFooter>
+                    <DialogClose asChild>
+                      <Button variant="outline">Cancel</Button>
+                    </DialogClose>
+                    <Button
+                      variant="destructive"
+                      onClick={() => handleDelete(user.id!)}
+                    >
+                      Delete
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </TableCell>
           </TableRow>
         ))}
