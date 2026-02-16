@@ -3,6 +3,15 @@ import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
 import { Button } from "../ui/button";
 import { useEffect, useState } from "react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import { UserRole } from "@/lib/types";
 
 const NavAuth = () => {
   const { user, logout, loading } = useAuth();
@@ -24,9 +33,44 @@ const NavAuth = () => {
       {!user ? (
         <Link href="/login">Sign In</Link>
       ) : (
-        <Button variant="ghost" className="font-semibold" onClick={logout}>
-          Welcome, {user.email.split("@")[0]}
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline">
+              Welcome {user.email.split("@")[0]}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="flex flex-col justify-between">
+            <DropdownMenuGroup>
+              <DropdownMenuItem>
+                <Link href="/profile" className="w-full">
+                  Profile
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              {user.roles!.includes(UserRole.ADMIN) && (
+                <>
+                  <DropdownMenuItem>
+                    <Link href="/dashboard" className="w-full">
+                      Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                </>
+              )}
+
+              <DropdownMenuItem>
+                <Link href="/books/create" className="w-full">
+                  Add Book
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+            </DropdownMenuGroup>
+
+            <Button onClick={logout} className="w-full">
+              Logout
+            </Button>
+          </DropdownMenuContent>
+        </DropdownMenu>
       )}
     </div>
   );
